@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 from time import sleep
-import requests
 import subprocess
 import os
 import re
@@ -24,22 +23,36 @@ if(not os.path.exists('data/submissions.zip')):
 if(not os.path.isdir('data/submissions')):
   subprocess.run("cd data; unzip submissions.zip -d submissions", shell=True, check=True)
 
-for filename in os.listdir('data/submissions/'):
-  if(not re.match('CIK[0-9]+.json', filename)):
-    continue
+country = None
+cik = None
+for filename in reversed(sorted(os.listdir('data/submissions/'))):
+  # the order is such that if there are additional files for a CIK,
+  # the primary file is first.
+  # subset for testing: ['CIK0001742912.json','CIK0001742912-submissions-001.json',
+  # 'CIK0001114446.json', 'CIK0001114446-submissions-039.json']:
   with open("data/submissions/" + filename, 'r') as f:
     submission = json.load(f)
-    country = None
-    for a in submission['addresses']:
-      if(submission['addresses'][a]['stateOrCountry'] == countryOfInterest):
-        country = countryOfInterest
-    if(not country):
-      continue
-    filingsList = pandas.DataFrame(submission['filings']['recent']).to_dict(orient="records")
-    # TODO: This list contains a maximum of 1000 entries, more entries need to be fetched from other files
+    # TODO: This load fails if it's not a JSON file and I manually deleted placeholder.txt from
+    # data/submissions/ without being sure if I put it there or if it always needs to be deleted
+
+    if(re.match('CIK[0-9]+.json', filename)):
+      country = None
+      for a in submission['addresses']:
+        if(submission['addresses'][a]['stateOrCountry'] == countryOfInterest):
+          country = countryOfInterest
+      if(not country):
+        continue
+      cik = submission['cik']
+      filingsList = pandas.DataFrame(submission['filings']['recent']).to_dict(orient="records")
+    else:
+      # we are in a supplemental file and country has the value taken from the main file
+      if(not country):
+        continue
+      filingsList = pandas.DataFrame(submission).to_dict(orient="records")
+
     form13fs = filter(lambda l: re.match('13F', l['form']), filingsList)
     for form in form13fs:
-      url = 'https://www.sec.gov/Archives/edgar/data/' + submission['cik'] + "/" + form['accessionNumber'].replace('-', '') + "/" + form['accessionNumber'] + '.txt'
+      url = 'https://www.sec.gov/Archives/edgar/data/' + cik + "/" + form['accessionNumber'].replace('-', '') + "/" + form['accessionNumber'] + '.txt'
       if(not os.path.exists('data/13fs/' + form['accessionNumber'] + '.txt')):
         subprocess.run("cd data/13fs; wget" + wgetHeaders + url, shell=True, check=True)
         sleep(0.12)

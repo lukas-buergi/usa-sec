@@ -1,3 +1,5 @@
 env
 data
 *.csv#
+figure.pdf
+results.csv
