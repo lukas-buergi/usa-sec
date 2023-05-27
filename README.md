@@ -12,6 +12,6 @@ Notes about fetch.py:
 
 Notes about analyse.py
 
-* Right now this only creates a .csv file with the holding information - calculating sums and drawing graphs is not implemented yet.
 * It takes a long time to run, maybe 30 minutes. I'm not sure why, most likely parsing a few thousand malformed xml files using Beautiful Soup is slow.
-* It skips a lot of files which are maybe malformed, maybe a different report. I haven't checked.
+* It skips a lot of files which are in an older format, but only before 2014.
+* It skips some files where it doesn't get any meta data (like date) before failing
