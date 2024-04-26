@@ -9,10 +9,11 @@ def aggregateInvestors(df):
   df = df.rename(columns={'UBS AG': 'UBS'})
   del df['UBS Group AG']
 
-  df['Pictet North America Advisors SA'] += df['PICTET ASSET MANAGEMENT SA'] + df['BANQUE PICTET & CIE SA']
+  df['Pictet North America Advisors SA'] += df['PICTET ASSET MANAGEMENT SA'] + df['BANQUE PICTET & CIE SA'] + df['Pictet Asset Management Holding SA']
   df = df.rename(columns={'Pictet North America Advisors SA': 'Pictet'})
   del df['PICTET ASSET MANAGEMENT SA']
   del df['BANQUE PICTET & CIE SA']
+  del df['Pictet Asset Management Holding SA']
 
   df['EDMOND DE ROTHSCHILD (SUISSE) S.A.'] += df['EDMOND DE ROTHSCHILD HOLDING S.A.']
   df = df.rename(columns={'EDMOND DE ROTHSCHILD (SUISSE) S.A.': 'Edmond de Rothschild'})
@@ -59,20 +60,25 @@ df3 = df3.fillna(0)
 df = aggregateInvestors(df)
 df3 = aggregateInvestors(df3)
 
-print(df.loc['2022-12-31'].sum())
-print(df.loc['2022-12-31', 'Swiss National Bank'])
+print(f"Total 2023: {df.loc['2023-12-31'].sum()}")
+print(f"Total 2023 Swiss National Bank: {df.loc['2022-12-31', 'Swiss National Bank']}")
+
 df.plot(kind='area', colormap='Greys', xlabel="Jahr", ylabel="Milliarden USD")
-plt.savefig('schweizerUnternehmen.pdf')  # saves the current figure
+for suffix in ['.pdf', '.webp']: # save the current figure
+  plt.savefig('schweizerUnternehmen' + suffix, dpi=300)
 
 df3 = df3.rename(columns={'Andere': 'Autres'})
 df3.plot(kind='area', colormap='Greys', xlabel="Année", ylabel="Milliards de USD")
-plt.savefig('entreprisesSuisses.pdf')  # saves the current figure
+for suffix in ['.pdf', '.webp']: # save the current figure
+  plt.savefig('entreprisesSuisses' + suffix, dpi=300)
 
 df2 = aggregateProducers(df2)
 df2.plot(kind='area', colormap='Greys', xlabel="Jahr", ylabel="Milliarden USD")
-plt.savefig('atombombenhersteller.pdf')  # saves the current figure
+for suffix in ['.pdf', '.webp']: # save the current figure
+  plt.savefig('atombombenhersteller' + suffix, dpi=300)
 
 df4 = aggregateProducers(df4)
 df4 = df4.rename(columns={'Andere': 'Autres'})
 df4.plot(kind='area', colormap='Greys', xlabel="Année", ylabel="Milliards de USD")
-plt.savefig('fabricant darmes nucleaires.pdf')  # saves the current figure
+for suffix in ['.pdf', '.webp']: # save the current figure
+  plt.savefig('fabricant darmes nucleaires' + suffix, dpi=300)
