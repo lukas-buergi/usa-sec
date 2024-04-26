@@ -26,14 +26,15 @@ if(not os.path.isdir('data/submissions')):
 country = None
 cik = None
 for filename in reversed(sorted(os.listdir('data/submissions/'))):
+  if filename == "placeholder.txt":
+    continue
   # the order is such that if there are additional files for a CIK,
   # the primary file is first.
   # subset for testing: ['CIK0001742912.json','CIK0001742912-submissions-001.json',
   # 'CIK0001114446.json', 'CIK0001114446-submissions-039.json']:
   with open("data/submissions/" + filename, 'r') as f:
+    print(f"Working on {filename}")
     submission = json.load(f)
-    # TODO: This load fails if it's not a JSON file and I manually deleted placeholder.txt from
-    # data/submissions/ without being sure if I put it there or if it always needs to be deleted
 
     if(re.match('CIK[0-9]+.json', filename)):
       country = None

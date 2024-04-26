@@ -8,7 +8,7 @@ import os
 import re
 import pandas
 
-dbob_years = [2014, 2015, 2016, 2018, 2019, 2021, 2022]
+dbob_years = [2014, 2015, 2016, 2018, 2019, 2021, 2022, 2023, 2024]
 
 dbob_columns = ['Name wie von SEC verwendet']
 for y in dbob_years:
